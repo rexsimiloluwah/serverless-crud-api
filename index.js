@@ -55,6 +55,12 @@ exports.handler = async function(event){
     return response;
 }
 
+/**
+ * Generates an AWS Lambda Response object
+ * @param {number} statusCode 
+ * @param {object} body 
+ * @returns 
+ */
 function buildResponse(statusCode, body={}){
     return {
         statusCode: statusCode,
@@ -62,6 +68,11 @@ function buildResponse(statusCode, body={}){
     }
 }
 
+/**
+ * Fetches a project item from the DynamoDB table
+ * @param {string} projectId 
+ * @returns {Promise} 
+ */
 async function getProject(projectId){
     const params = {
         TableName: dynamodbTableName,
@@ -81,6 +92,11 @@ async function getProject(projectId){
     })
 }
 
+/**
+ * Creates a new project item in the DynamoDB table
+ * @param {object} body 
+ * @returns {Promise}
+ */
 async function createProject(body){
     const params = {
         TableName: dynamodbTableName,
@@ -98,6 +114,13 @@ async function createProject(body){
     })
 }
 
+/**
+ * Updates an exisiting project item in the DynamoDB table
+ * @param {string} projectId 
+ * @param {string} updateKey 
+ * @param {any} updateValue 
+ * @returns {Promise}
+ */
 async function updateProject(projectId, updateKey, updateValue){
 
     const params = {
@@ -123,6 +146,11 @@ async function updateProject(projectId, updateKey, updateValue){
     })
 }
 
+/**
+ * Deletes an existing project item from the DynamoDB table
+ * @param {string} projectId 
+ * @returns {Promise}
+ */
 async function deleteProject(projectId){
     const params = {
         TableName: dynamodbTableName,
@@ -142,7 +170,10 @@ async function deleteProject(projectId){
     })
 }
 
-
+/**
+ * Fetches all the project items in the DynamoDB table
+ * @returns {object}
+ */
 async function getAllProjects(){
     const params = {
         TableName: dynamodbTableName
