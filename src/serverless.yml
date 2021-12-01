@@ -1,0 +1,107 @@
+service: sls-project-service
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+frameworkVersion: '2'
+
+# Provider
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+
+  stage: dev
+  region: us-west-2
+
+  iam:
+    role:
+      statements:
+      - Effect: "Allow"
+        Action:
+        - "dynamodb:BatchGet*"
+        - "dynamodb:DescribeStream"
+        - "dynamodb:DescribeTable"
+        - "dynamodb:Get*"
+        - "dynamodb:Query"
+        - "dynamodb:Scan"
+        - "dynamodb:BatchWrite*"
+        - "dynamodb:CreateTable"
+        - "dynamodb:Delete*"
+        - "dynamodb:Update*"
+        - "dynamodb:PutItem"
+        Resource: "*"
+
+  environment:
+    PROJECTS_TABLE: projectsTable2001
+
+# Function handlers
+functions:
+  health:
+    handler: handler.health
+    memorySize: 128 
+    description: Check Server Health 
+    events: 
+      - http:
+          path: /health 
+          method: get
+
+  projects:
+    handler: handler.getAllProjects 
+    memorySize: 128 
+    description: Get all Projects 
+    events:
+      - http:
+          path: /projects 
+          method: get 
+
+  createProject:
+    handler: handler.createProject 
+    memorySize: 128 
+    description: Create a new project 
+    events:
+      - http:
+          path: /project 
+          method: post 
+
+  getProject:
+    handler: handler.getProjectById 
+    memorySize: 128 
+    description: Get a project by ID 
+    events: 
+      - http:
+          path: /project/{id}
+          method: get 
+  
+  updateProject:
+    handler: handler.updateProject 
+    memorySize: 128 
+    description: Update an existing project 
+    events:
+      - http:
+          path: /project/{id}
+          method: put 
+
+  deleteProject:
+    handler: handler.deleteProject 
+    memorySize: 128 
+    description: Delete an existing project 
+    events:
+      - http:
+          path: /project/{id}
+          method: delete
+  
+resources: # CloudFormation template syntax from here on.
+  Resources:
+    projectsTable2001:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: projectsTable2001
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
